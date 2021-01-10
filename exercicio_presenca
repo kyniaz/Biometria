@@ -1,0 +1,42 @@
+ex2 = matrix(c(6.05, 16, 321, 1, 44,
+6.53, 40, 332, 1, 48,
+7.02, 72, 310, 2, 50,
+7.51, 112, 299, 3, 42,
+7.99, 184, 332, 6, 48,
+8.47, 252, 343, 7, 38,
+8.95, 280, 332, 10, 47,
+9.44, 284, 321, 11, 45), byrow = T,nrow = 8)
+
+ex2 = data.frame(ex2)
+
+X = ex2$X1
+
+##Logito
+
+modl_pul = glm(cbind(ex2$X2, ex2$X3-ex2$X2) ~ X, family = binomial(link = "logit"))
+summary(modl_pul)
+
+##Probito
+modp_flo = glm(cbind(ex2$X4, ex2$X5- ex2$X4) ~ X, family = binomial(link = "probit"))
+summary(modp_flo)
+
+
+ok = predict.glm(modl_pul, data.frame(X = seq(6,9.5, 0.01)), type = "response")
+ok2 = predict(modp_flo, data.frame(X = seq(6,9.5, 0.01)), type = "response")
+
+ratio = data.frame( seq(6,9.5, 0.01), ok/ok2)
+
+colnames(ratio) =  c("Dose", "Razão")
+
+plot(ratio$Dose, ok, type = "l", col = "blue", xlab="Dose", ylab="Prob")
+lines(ratio$Dose, ok2, col = "red")
+
+plot(ratio$Dose, ratio$Razão, type = "l", xlab="Dose", ylab="Razão")
+abline(v = 7.8)
+
+
+#dose de 9.33
+predict.glm(modp_flo, data.frame(X = 9.33), type = "response")
+
+#dose de 7.85
+predict.glm(modp_flo, data.frame(X = 7.85), type = "response")
